@@ -1,0 +1,35 @@
+---
+title: "county"
+author: "SaiG"
+date: '2022-06-30'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+We're going to make a map from the dataset!
+
+```{r}
+load_variables(2018, "acs5") |> filter(concept == "RACE")
+
+racevars1 = c("White", "African American", "Asian", "B03003_003")
+racevars = c("B02001_002", "B02001_003", "B02001_005", "B03003_003")
+```
+
+```{r}
+county_data <- get_acs(geography = "tract", variables = racevars, state = "MA", county = "Middlesex", geometry = TRUE, summary_var = "B02001_001")
+```
+
+```{r}
+county_data |>
+  mutate(Percent = (estimate * 100) / summary_est) |>
+  ggplot(mapping = aes(fill = Percent, color = Percent)) +
+  geom_sf() +
+  facet_wrap(~variable) +
+  scale_fill_viridis_c(direction = -1) +
+  scale_color_viridis_c(direction = -1) +
+  theme_void()
+```
+

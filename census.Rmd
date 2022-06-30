@@ -1,0 +1,29 @@
+---
+title: "Census"
+author: "SaiG"
+date: '2022-06-30'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tidycensus)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r Census}
+st_pums <- get_pums(variables = c("PUMA", "FINCP"), state = "Massachusetts", recode = TRUE, survey = "acs1", year = 2019)
+st_pums |>
+group_by(PUMA) |>
+summarize(total_pop = sum(PWGTP), pct_income = sum(PWGTP[FINCP < 12880])/total_pop) |>
+ggplot(mapping = aes(x = pct_income, y = fct_reorder(PUMA, pct_income))) +
+geom_point() +
+theme(axis.text.y = element_text(size = 3)) +
+labs(x = "Rural Population Proportion", y = "")
+```
